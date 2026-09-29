@@ -3,30 +3,35 @@ const API_BASE_URL =
 
 export async function runAgent(query) {
   try {
+    // TEMPORARY CORS TEST
     const response = await fetch(
-      `${API_BASE_URL}/agent/run`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: query,
-        }),
-      }
+      `${API_BASE_URL}/`
     );
-
-    const text = await response.text();
 
     if (!response.ok) {
       throw new Error(
-        `Agent request failed: ${response.status} ${text}`
+        `Backend returned ${response.status}`
       );
     }
 
-    return JSON.parse(text);
+    const data = await response.json();
+
+    console.log("BACKEND CONNECTION TEST:", data);
+
+    return {
+      status: "success",
+      test: true,
+      backend: data,
+      insights: [],
+    };
   } catch (error) {
-    console.error("runAgent error:", error);
-    throw error;
+    console.error(
+      "BACKEND CONNECTION ERROR:",
+      error
+    );
+
+    throw new Error(
+      `Backend connection failed: ${error.message}`
+    );
   }
 }
