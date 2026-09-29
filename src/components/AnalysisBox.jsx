@@ -8,9 +8,8 @@ import {
 
 import { runAgent } from "../services/api";
 
-function AnalysisBox() {
+function AnalysisBox({ onResult }) {
   const [query, setQuery] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const handleAnalyze = async () => {
@@ -25,6 +24,9 @@ function AnalysisBox() {
 
       console.log("BizOps Agent Result:", result);
 
+      if (onResult) {
+        onResult(result);
+      }
     } catch (error) {
       console.error("BizOps Agent Error:", error);
     } finally {
@@ -42,7 +44,6 @@ function AnalysisBox() {
 
           <div>
             <h2>Ask BizOps Agent</h2>
-
             <p>
               Ask a business question and let the AI investigate it.
             </p>
