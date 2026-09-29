@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   Loader2,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
 
 import { runAgent } from "../services/api";
@@ -11,15 +12,17 @@ import { runAgent } from "../services/api";
 function AnalysisBox({ onResult }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleAnalyze = async () => {
     if (!query.trim()) {
       return;
     }
 
-    try {
-      setLoading(true);
+    setError("");
+    setLoading(true);
 
+    try {
       const result = await runAgent(query);
 
       console.log("BizOps Agent Result:", result);
@@ -27,8 +30,13 @@ function AnalysisBox({ onResult }) {
       if (onResult) {
         onResult(result);
       }
-    } catch (error) {
-      console.error("BizOps Agent Error:", error);
+    } catch (err) {
+      console.error("BizOps Agent Error:", err);
+
+      setError(
+        err?.message ||
+          "Unable to connect to the BizOps Agent backend."
+      );
     } finally {
       setLoading(false);
     }
@@ -44,6 +52,7 @@ function AnalysisBox({ onResult }) {
 
           <div>
             <h2>Ask BizOps Agent</h2>
+
             <p>
               Ask a business question and let the AI investigate it.
             </p>
@@ -59,7 +68,10 @@ function AnalysisBox({ onResult }) {
       <div className="query-area">
         <textarea
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setError("");
+          }}
           placeholder="Example: Analyze why our sales dropped this month and suggest 3 actions..."
           rows="4"
           aria-label="Business analysis question"
@@ -78,7 +90,10 @@ function AnalysisBox({ onResult }) {
           >
             {loading ? (
               <>
-                <Loader2 size={17} className="spin" />
+                <Loader2
+                  size={17}
+                  className="spin"
+                />
                 Analyzing...
               </>
             ) : (
@@ -89,6 +104,27 @@ function AnalysisBox({ onResult }) {
             )}
           </button>
         </div>
+
+        {error && (
+          <div
+            style={{
+              marginTop: "14px",
+              padding: "12px 14px",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "9px",
+              color: "#ff9b9b",
+              background: "rgba(239, 68, 68, 0.08)",
+              border:
+                "1px solid rgba(239, 68, 68, 0.18)",
+              fontSize: "13px",
+            }}
+          >
+            <AlertCircle size={17} />
+            <span>{error}</span>
+          </div>
+        )}
       </div>
     </section>
   );
