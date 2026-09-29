@@ -29,7 +29,69 @@ function App() {
     : [];
 
   const finalResponse =
-    agentResult?.final_response || "";
+    typeof agentResult?.final_response === "string"
+      ? agentResult.final_response
+      : "";
+
+  const getText = (item) => {
+    if (typeof item === "string") {
+      return item;
+    }
+
+    if (!item || typeof item !== "object") {
+      return String(item || "");
+    }
+
+    return (
+      item.message ||
+      item.insight ||
+      item.description ||
+      item.text ||
+      item.content ||
+      item.action ||
+      item.recommendation ||
+      item.title ||
+      JSON.stringify(item)
+    );
+  };
+
+  const getInsightType = (text) => {
+    const lowerText = text.toLowerCase();
+
+    if (
+      lowerText.includes("decline") ||
+      lowerText.includes("declined") ||
+      lowerText.includes("decrease") ||
+      lowerText.includes("decreased") ||
+      lowerText.includes("weakest") ||
+      lowerText.includes("risk") ||
+      lowerText.includes("drop") ||
+      lowerText.includes("lower")
+    ) {
+      return "warning";
+    }
+
+    if (
+      lowerText.includes("increase") ||
+      lowerText.includes("increased") ||
+      lowerText.includes("strongest") ||
+      lowerText.includes("highest") ||
+      lowerText.includes("growth") ||
+      lowerText.includes("positive") ||
+      lowerText.includes("top")
+    ) {
+      return "positive";
+    }
+
+    if (
+      lowerText.includes("opportunity") ||
+      lowerText.includes("recommend")
+    ) {
+      return "success";
+    }
+
+    return "default";
+  };
 
   return (
     <div className="app-shell">
@@ -40,9 +102,7 @@ function App() {
 
         <main className="dashboard">
 
-          {/* =========================
-              HERO SECTION
-          ========================= */}
+          {/* HERO */}
 
           <section className="welcome-section">
             <div>
@@ -65,9 +125,7 @@ function App() {
           </section>
 
 
-          {/* =========================
-              BUSINESS STATS
-          ========================= */}
+          {/* BUSINESS STATS */}
 
           <section className="stats-grid">
 
@@ -104,34 +162,31 @@ function App() {
           </section>
 
 
-          {/* =========================
-              ASK BIZOPS AGENT
-          ========================= */}
+          {/* ASK BIZOPS AGENT */}
 
           <AnalysisBox
             onResult={(result) => {
+              console.log(
+                "APP RECEIVED AGENT RESULT:",
+                result
+              );
+
               setAgentResult(result);
             }}
           />
 
 
-          {/* =========================
-              AGENT PIPELINE
-          ========================= */}
+          {/* AGENT PIPELINE */}
 
           <AgentPipeline />
 
 
-          {/* =========================
-              LIVE AGENT RESULTS
-          ========================= */}
+          {/* LIVE RESULTS */}
 
           {agentResult && (
             <>
 
-              {/* =========================
-                  EXECUTIVE SUMMARY
-              ========================= */}
+              {/* EXECUTIVE SUMMARY */}
 
               {finalResponse && (
                 <section className="results-section">
@@ -158,7 +213,6 @@ function App() {
                     </span>
 
                   </div>
-
 
                   <div className="analysis-box">
 
@@ -189,7 +243,6 @@ function App() {
 
                     </div>
 
-
                     <div className="query-area">
 
                       <p
@@ -212,9 +265,7 @@ function App() {
               )}
 
 
-              {/* =========================
-                  BUSINESS INSIGHTS
-              ========================= */}
+              {/* BUSINESS INSIGHTS */}
 
               <section className="results-section">
 
@@ -250,55 +301,9 @@ function App() {
 
                     insights.map((insight, index) => {
 
-                      const text =
-                        typeof insight === "string"
-                          ? insight
-                          : insight?.message ||
-                            insight?.insight ||
-                            insight?.description ||
-                            JSON.stringify(insight);
+                      const text = getText(insight);
 
-
-                      const lowerText =
-                        text.toLowerCase();
-
-
-                      let type = "default";
-
-
-                      if (
-                        lowerText.includes("increase") ||
-                        lowerText.includes("increased") ||
-                        lowerText.includes("strongest") ||
-                        lowerText.includes("highest") ||
-                        lowerText.includes("growth") ||
-                        lowerText.includes("positive")
-                      ) {
-                        type = "positive";
-                      }
-
-
-                      if (
-                        lowerText.includes("decline") ||
-                        lowerText.includes("declined") ||
-                        lowerText.includes("decrease") ||
-                        lowerText.includes("decreased") ||
-                        lowerText.includes("weakest") ||
-                        lowerText.includes("risk") ||
-                        lowerText.includes("drop")
-                      ) {
-                        type = "warning";
-                      }
-
-
-                      if (
-                        lowerText.includes("opportunity") ||
-                        lowerText.includes("recommended") ||
-                        lowerText.includes("recommendation")
-                      ) {
-                        type = "success";
-                      }
-
+                      const type = getInsightType(text);
 
                       return (
                         <InsightCard
@@ -326,9 +331,7 @@ function App() {
               </section>
 
 
-              {/* =========================
-                  RECOMMENDATIONS
-              ========================= */}
+              {/* RECOMMENDATIONS */}
 
               <section className="recommendations-section">
 
@@ -366,16 +369,7 @@ function App() {
                       (recommendation, index) => {
 
                         const text =
-                          typeof recommendation === "string"
-                            ? recommendation
-                            : recommendation?.action ||
-                              recommendation?.recommendation ||
-                              recommendation?.description ||
-                              recommendation?.title ||
-                              JSON.stringify(
-                                recommendation
-                              );
-
+                          getText(recommendation);
 
                         return (
                           <RecommendationCard
@@ -395,8 +389,8 @@ function App() {
 
                     <RecommendationCard
                       number={1}
-                      title="Run a business analysis"
-                      description="Ask BizOps Agent a business question to generate evidence-backed recommendations."
+                      title="No recommendations available"
+                      description="Run a business analysis to generate evidence-backed recommendations."
                     />
 
                   )}
@@ -406,9 +400,7 @@ function App() {
               </section>
 
 
-              {/* =========================
-                  EXTERNAL SOURCES
-              ========================= */}
+              {/* EXTERNAL SOURCES */}
 
               <section className="sources-section">
 
@@ -452,20 +444,17 @@ function App() {
                           index + 1
                         }`;
 
-
                       const domain =
                         source?.domain ||
                         source?.source ||
                         source?.website ||
                         "External Source";
 
-
                       const description =
                         source?.description ||
                         source?.snippet ||
                         source?.summary ||
                         "External research source used for business context.";
-
 
                       return (
                         <SourceCard
@@ -493,9 +482,7 @@ function App() {
               </section>
 
 
-              {/* =========================
-                  AGENT STATUS
-              ========================= */}
+              {/* AGENT STATUS */}
 
               <section className="results-section">
 
@@ -561,7 +548,6 @@ function App() {
                     </p>
 
                   </div>
-
 
                   <div
                     style={{
