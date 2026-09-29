@@ -3,7 +3,7 @@ const API_BASE_URL =
 
 export async function runAgent(query) {
   const response = await fetch(
-    `${API_BASE_URL}/test-post`,
+    `${API_BASE_URL}/agent/run`,
     {
       method: "POST",
       headers: {
@@ -15,11 +15,13 @@ export async function runAgent(query) {
     }
   );
 
+  const text = await response.text();
+
   if (!response.ok) {
     throw new Error(
-      `HTTP ${response.status}`
+      `HTTP ${response.status}: ${text}`
     );
   }
 
-  return response.json();
+  return JSON.parse(text);
 }
