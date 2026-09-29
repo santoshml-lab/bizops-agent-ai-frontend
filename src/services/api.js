@@ -2,36 +2,36 @@ const API_BASE_URL =
   "https://bizops-agent-ai-backend.onrender.com";
 
 export async function runAgent(query) {
-  try {
-    // TEMPORARY CORS TEST
-    const response = await fetch(
-      `${API_BASE_URL}/`
-    );
+  console.log("Sending request to:", `${API_BASE_URL}/agent/run`);
+  console.log("Query:", query);
 
-    if (!response.ok) {
-      throw new Error(
-        `Backend returned ${response.status}`
-      );
+  const response = await fetch(
+    `${API_BASE_URL}/agent/run`,
+    {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: query,
+      }),
     }
+  );
 
-    const data = await response.json();
+  console.log("Response status:", response.status);
 
-    console.log("BACKEND CONNECTION TEST:", data);
-
-    return {
-      status: "success",
-      test: true,
-      backend: data,
-      insights: [],
-    };
-  } catch (error) {
-    console.error(
-      "BACKEND CONNECTION ERROR:",
-      error
-    );
+  if (!response.ok) {
+    const errorText = await response.text();
 
     throw new Error(
-      `Backend connection failed: ${error.message}`
+      `Backend error ${response.status}: ${errorText}`
     );
   }
+
+  const data = await response.json();
+
+  console.log("Agent response:", data);
+
+  return data;
 }
