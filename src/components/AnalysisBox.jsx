@@ -25,6 +25,10 @@ function AnalysisBox({ onResult }) {
       console.log("FINAL AGENT RESULT:", result);
 
       setMessage("Backend response received ✅");
+      console.log(
+      "FULL BACKEND RESPONSE:",
+      JSON.stringify(result, null, 2)
+);
 
       if (onResult) {
         onResult(result);
