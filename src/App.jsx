@@ -185,22 +185,9 @@ function App() {
 
           {agentResult && (
             <>
-              <pre
-  style={{
-    padding: "20px",
-    marginBottom: "20px",
-    borderRadius: "14px",
-    background: "#0c121f",
-    color: "#9fb8e8",
-    fontSize: "12px",
-    lineHeight: "1.6",
-    overflowX: "auto",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-  }}
->
-  {JSON.stringify(agentResult, null, 2)}
-</pre>
+
+  
+
 
               {/* EXECUTIVE SUMMARY */}
 
