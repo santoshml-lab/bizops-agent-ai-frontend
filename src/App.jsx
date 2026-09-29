@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import StatCard from "./components/StatCard";
@@ -8,6 +10,8 @@ import RecommendationCard from "./components/RecommendationCard";
 import SourceCard from "./components/SourceCard";
 
 function App() {
+  const [agentResult, setAgentResult] = useState(null);
+
   return (
     <div className="app-shell">
       <Sidebar />
@@ -18,7 +22,9 @@ function App() {
         <main className="dashboard">
           <section className="welcome-section">
             <div>
-              <span className="eyebrow">AI BUSINESS OPERATIONS</span>
+              <span className="eyebrow">
+                AI BUSINESS OPERATIONS
+              </span>
 
               <h1>
                 Understand your business.
@@ -66,7 +72,11 @@ function App() {
             />
           </section>
 
-          <AnalysisBox />
+          <AnalysisBox
+            onResult={(result) => {
+              setAgentResult(result);
+            }}
+          />
 
           <AgentPipeline />
 
@@ -74,13 +84,17 @@ function App() {
             <div className="section-heading">
               <div>
                 <span className="eyebrow">AI OUTPUT</span>
+
                 <h2>Business Intelligence</h2>
+
                 <p>
                   Insights generated from validated business evidence.
                 </p>
               </div>
 
-              <span className="result-count">11 Insights</span>
+              <span className="result-count">
+                {agentResult?.insights?.length || 11} Insights
+              </span>
             </div>
 
             <div className="insights-grid">
@@ -125,14 +139,20 @@ function App() {
           <section className="recommendations-section">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">AI DECISION SUPPORT</span>
+                <span className="eyebrow">
+                  AI DECISION SUPPORT
+                </span>
+
                 <h2>Recommended Actions</h2>
+
                 <p>
                   Suggested next steps based on the current evidence.
                 </p>
               </div>
 
-              <span className="result-count">3 Actions</span>
+              <span className="result-count">
+                3 Actions
+              </span>
             </div>
 
             <div className="recommendations-grid">
@@ -159,14 +179,20 @@ function App() {
           <section className="sources-section">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">EXTERNAL RESEARCH</span>
+                <span className="eyebrow">
+                  EXTERNAL RESEARCH
+                </span>
+
                 <h2>Evidence & Sources</h2>
+
                 <p>
                   External sources used to provide market context.
                 </p>
               </div>
 
-              <span className="result-count">5 Sources</span>
+              <span className="result-count">
+                5 Sources
+              </span>
             </div>
 
             <div className="sources-grid">
@@ -196,6 +222,42 @@ function App() {
               />
             </div>
           </section>
+
+          {agentResult && (
+            <section className="results-section">
+              <div className="section-heading">
+                <div>
+                  <span className="eyebrow">
+                    LIVE AGENT RESPONSE
+                  </span>
+
+                  <h2>Latest Analysis Result</h2>
+
+                  <p>
+                    This result was returned by the BizOps Agent backend.
+                  </p>
+                </div>
+              </div>
+
+              <pre
+                style={{
+                  padding: "20px",
+                  borderRadius: "14px",
+                  background: "rgba(12, 18, 31, 0.9)",
+                  border:
+                    "1px solid rgba(148, 163, 184, 0.08)",
+                  color: "#9fb8e8",
+                  fontSize: "11px",
+                  lineHeight: "1.6",
+                  overflowX: "auto",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {JSON.stringify(agentResult, null, 2)}
+              </pre>
+            </section>
+          )}
         </main>
       </div>
     </div>
