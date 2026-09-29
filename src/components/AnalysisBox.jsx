@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, BrainCircuit } from "lucide-react";
+import { runAgent } from "../services/api";
 
 function AnalysisBox({ onResult }) {
   const [query, setQuery] = useState("");
